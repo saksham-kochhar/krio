@@ -54,10 +54,12 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
+
     val nav_version = "2.9.6"
 
     implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
 
 
     // Jetpack Compose integration

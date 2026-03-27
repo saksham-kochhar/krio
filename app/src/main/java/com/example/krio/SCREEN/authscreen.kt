@@ -1,5 +1,6 @@
 package com.example.krio.SCREEN
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,18 +29,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.krio.Authviewmodel
 import com.example.krio.ui.theme.Authgrey
 import com.example.krio.ui.theme.poppins
 import com.example.krio.ui.theme.poppinsmedium
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.auth
 
 @Composable
-fun Authscreen (modifier: Modifier = Modifier.fillMaxSize(), navcontroller: NavHostController){
+fun Authscreen (modifier: Modifier = Modifier.fillMaxSize(), navcontroller: NavHostController , viewmodel : Authviewmodel){
 
     var phonenumber by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize().background(color = Authgrey).padding(32.dp)) {
         Spacer(modifier = Modifier.height(55.dp))
@@ -81,7 +81,9 @@ fun Authscreen (modifier: Modifier = Modifier.fillMaxSize(), navcontroller: NavH
         )
         Spacer(modifier = Modifier.height(10.dp))
         Button(onClick ={
-            navcontroller.navigate(routes.otpscreen + "/${phonenumber}")}
+            viewmodel.login("+91${phonenumber}" , activity = context as Activity , navcontroller)
+            viewmodel.phone = phonenumber
+            }
             ,enabled = phonenumber.length == 10,
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally)) {
             Text(text = "Continue")

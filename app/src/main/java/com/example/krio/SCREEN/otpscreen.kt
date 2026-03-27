@@ -1,5 +1,7 @@
 package com.example.krio.SCREEN
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -23,12 +25,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +43,9 @@ import androidx.navigation.NavHostController
 import com.example.krio.Authviewmodel
 import com.example.krio.ui.theme.poppins
 import com.example.krio.ui.theme.poppinsmedium
+import com.google.firebase.Firebase
+import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.auth
 
 
 @Composable
@@ -79,13 +86,16 @@ fun otpinput(otp : String, onotpchange:(String) -> Unit,
 }
 @Composable
 fun otpscreen(navcontroller: NavHostController
-              , phonenumber: String? , modifier : Modifier, viewmodel : Authviewmodel) {
+              , modifier : Modifier, viewmodel : Authviewmodel) {
     var otp by remember { mutableStateOf("") }
+    val verificationid by viewmodel.verfificationid.observeAsState()
+    val context = LocalContext.current
+    val phonenumber = viewmodel.phone
 
     Column(modifier = Modifier.fillMaxSize().padding(top = 64.dp, start = 6.dp,
         end = 6.dp, bottom = 10.dp , )) {
 
-        IconButton(onClick = { navcontroller.navigate(routes.authscreen) }) {
+        IconButton(onClick = { navcontroller.popBackStack() }) {
             Icon( imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
         }
         Column(modifier =  Modifier.padding(start = 13.dp, end = 13.dp)) {
@@ -113,7 +123,26 @@ fun otpscreen(navcontroller: NavHostController
 
         otpinput(otp , onotpchange =  {otp = it} , modifier = Modifier)
             Spacer(modifier = Modifier.height(26.dp))
-        Button(onClick = {navcontroller.navigate(routes.homepage)} , modifier =
+        Button(onClick = {
+            if(verificationid != null)
+            {
+                val credential = PhoneAuthProvider.getCredential(verificationid.toString(), otp)
+
+                Firebase.auth.signInWithCredential(credential).addOnCompleteListener {
+                    task -> if (task.isSuccessful){
+                        navcontroller.navigate(routes.homepage){
+                            popUpTo(routes.authscreen) {inclusive = true}
+                        }
+                }
+                    else{
+                    Toast.makeText(context, "Invalid OTP" , Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+
+        }
+
+        } , modifier =
             Modifier.align(alignment = Alignment.CenterHorizontally)
                 .fillMaxWidth()
                 .padding(top = 8.dp, bottom = 4.dp) , enabled = otp.length == 6)

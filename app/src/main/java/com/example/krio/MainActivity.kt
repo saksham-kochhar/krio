@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import com.example.krio.ui.theme.KRIOTheme
+import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 
@@ -17,8 +18,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewmodel = ViewModelProvider(this).get(Authviewmodel :: class.java)
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
+        val FirebaseAppCheck = FirebaseAppCheck.getInstance()
+        FirebaseAppCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
         enableEdgeToEdge()
         setContent {
+
             KRIOTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     appnavigation(modifier = Modifier.padding(innerPadding),viewmodel)

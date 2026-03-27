@@ -17,11 +17,10 @@ fun appnavigation(modifier: Modifier = Modifier, authviewmodel: Authviewmodel){
 
     NavHost(navcontroller, startDestination = routes.authscreen, modifier = Modifier) {
         composable(routes.authscreen) {
-            Authscreen(Modifier,navcontroller)
+            Authscreen(Modifier,navcontroller , authviewmodel)
         }
-        composable(routes.otpscreen + "/{phonenumber}") {
-            val phonenumber = it.arguments?.getString("phonenumber")
-            otpscreen(navcontroller,phonenumber,modifier,authviewmodel)
+        composable(routes.otpscreen) {
+            otpscreen(navcontroller,modifier,authviewmodel)
         }
         composable(routes.homepage){
             Homepage(navcontroller,modifier)
